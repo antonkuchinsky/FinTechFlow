@@ -1,0 +1,28 @@
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka
+
+server:
+  port: 8222
+
+spring:
+  application:
+    name: gateway-service
+  config:
+    import: optional:configserver:instead
+
+  cloud:
+    gateway:
+      routes:
+
+
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+
