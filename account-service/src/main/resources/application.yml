@@ -1,0 +1,26 @@
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka
+
+spring:
+  application:
+    name: user-service
+  config:
+    import: optional:configserver:instead
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+
+  flyway:
+    locations: classpath:migration
+
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
