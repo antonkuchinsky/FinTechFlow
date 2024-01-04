@@ -11,5 +11,4 @@ public interface AccountService {
     BigDecimal getBalance(UUID id);
     void changeAccountType(AccountTypeDto accountTypeDto);
     void changeAccountStatus(UUID id);
-    void closingAccount(UUID id);
 }
