@@ -8,5 +8,5 @@ create table if not exists accounts
     currency       varchar(3) not null,
     status   varchar (20) not null,
     opening_date date not null,
-    closing_date date not null
+    closing_date date
     );
