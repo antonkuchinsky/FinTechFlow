@@ -1,6 +1,7 @@
 package com.banksolution.accountservice.service;
 
 import com.banksolution.accountservice.dto.AccountDto;
+import com.banksolution.accountservice.dto.AccountStatusDto;
 import com.banksolution.accountservice.dto.AccountTypeDto;
 
 import java.math.BigDecimal;
@@ -10,5 +11,5 @@ public interface AccountService {
     void createAccount(AccountDto accountDto);
     BigDecimal getBalance(UUID id);
     void changeAccountType(AccountTypeDto accountTypeDto);
-    void changeAccountStatus(UUID id);
+    void changeAccountStatus(AccountStatusDto accountStatusDto);
 }

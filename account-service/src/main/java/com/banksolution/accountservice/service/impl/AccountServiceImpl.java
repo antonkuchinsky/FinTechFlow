@@ -1,6 +1,7 @@
 package com.banksolution.accountservice.service.impl;
 
 import com.banksolution.accountservice.dto.AccountDto;
+import com.banksolution.accountservice.dto.AccountStatusDto;
 import com.banksolution.accountservice.dto.AccountTypeDto;
 import com.banksolution.accountservice.exception.InvalidDataException;
 import com.banksolution.accountservice.mapper.AccountMapperDto;
@@ -47,10 +48,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void changeAccountStatus(UUID id) {
-        var account=accountRepository.findById(id);
+    public void changeAccountStatus(AccountStatusDto accountStatusDto) {
+        var account=accountRepository.findById(accountStatusDto.id());
         if(account.isPresent()){
-            account.get().setStatus("blocked");
+            account.get().setStatus(accountStatusDto.status());
         }
         else{
             throw new InvalidDataException("Account with this id not found","Account not found");
