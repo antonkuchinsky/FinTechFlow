@@ -44,6 +44,7 @@ public class TransactionalServiceImpl implements TransactionalService {
         var accountBalance=account.get().getBalance();
         if(account.isPresent()){
             account.get().setBalance(accountBalance.add(balanceOperationDto.sum()));
+            accountRepository.save(account.get());
         }
         else{
             throw new InvalidDataException("Account with this id not found","Account not found");
