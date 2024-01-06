@@ -52,6 +52,7 @@ public class AccountServiceImpl implements AccountService {
         var account=accountRepository.findById(accountStatusDto.id());
         if(account.isPresent()){
             account.get().setStatus(accountStatusDto.status());
+            accountRepository.save(account.get());
         }
         else{
             throw new InvalidDataException("Account with this id not found","Account not found");

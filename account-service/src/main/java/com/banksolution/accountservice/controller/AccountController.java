@@ -29,31 +29,31 @@ public class AccountController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createAccount(AccountDto accountDto){
+    public void createAccount(@RequestBody AccountDto accountDto){
       accountService.createAccount(accountDto);
     }
 
     @PatchMapping("/change/type")
     @ResponseStatus(HttpStatus.CREATED)
-    public void changeAccountType(AccountTypeDto accountTypeDto){
+    public void changeAccountType(@RequestBody AccountTypeDto accountTypeDto){
         accountService.changeAccountType(accountTypeDto);
     }
 
     @PatchMapping("/change/status")
     @ResponseStatus(HttpStatus.CREATED)
-    public void changeAccountStatus(AccountStatusDto accountStatusDto){
+    public void changeAccountStatus(@RequestBody AccountStatusDto accountStatusDto){
         accountService.changeAccountStatus(accountStatusDto);
     }
 
     @PatchMapping("/transaction/transfer")
     @ResponseStatus(HttpStatus.CREATED)
-    public void transferFundsBetweenAccounts(TransferMoneyDto transferMoneyDto){
+    public void transferFundsBetweenAccounts(@RequestBody TransferMoneyDto transferMoneyDto){
      transactionalService.transferFundsBetweenAccounts(transferMoneyDto);
     }
 
     @PatchMapping("/transaction/refill")
     @ResponseStatus(HttpStatus.CREATED)
-    public void refillBalance(BalanceOperationDto balanceOperationDto){
+    public void refillBalance(@RequestBody BalanceOperationDto balanceOperationDto){
         transactionalService.refillBalance(balanceOperationDto);
     }
 }

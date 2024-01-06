@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  postgres_accounts:
+    image: postgres:15.3
+    container_name: accounts_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=accounts_db
+    volumes:
+      - accounts_pgdata:/var/lib/postgresql/data
+      - ./sql-scripts/created_accounts_db.sql:/docker-entrypoint-initdb.d/created_accounts_db.sql
+    networks:
+      - postgres-network
+    restart: always
+
+networks:
+  postgres-network:
+    driver: bridge
+
+volumes:
+  accounts_pgdata:
