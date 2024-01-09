@@ -21,7 +21,7 @@ public record AccountDto(
         @Pattern(regexp = "creditional|physical", message = "The account type can be 'creditional' or 'physical'")
         String accountType,
 
-        @Pattern(regexp = "USD|BYN", message = "The currency can be 'USD' or 'BYN'")
+        @Pattern(regexp = "USD", message = "The currency can be 'USD'")
         String currency
 ) {
 }
