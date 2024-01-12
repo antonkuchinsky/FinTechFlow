@@ -15,10 +15,16 @@ spring:
     url: ${SPRING_DATASOURCE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
+  kafka:
+    bootstrap-servers: localhost:9092
+
+
+topic:
+  name: t.user.reg
 
   flyway:
     locations: classpath:migration
-
+#transaction.reg
 
 management:
   tracing:

@@ -1,24 +1,30 @@
 package com.banksolution.accountservice.service.impl;
 
+import com.banksolution.accountservice.config.Producer;
 import com.banksolution.accountservice.dto.transactional.BalanceOperationDto;
+import com.banksolution.accountservice.dto.transactional.Transaction;
 import com.banksolution.accountservice.dto.transactional.TransferMoneyDto;
 import com.banksolution.accountservice.exception.InsufficientFundsException;
 import com.banksolution.accountservice.exception.InvalidDataException;
 import com.banksolution.accountservice.repository.AccountRepository;
 import com.banksolution.accountservice.service.TransactionalService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
 public class TransactionalServiceImpl implements TransactionalService {
     private final AccountRepository accountRepository;
+    private final Producer producer;
 
     @Override
     @Transactional
+    @SneakyThrows
     public void transferFundsBetweenAccounts(TransferMoneyDto transferMoneyDto) {
      var sender=accountRepository.findById(transferMoneyDto.senderId());
      var senderBalance=sender.get().getBalance();
@@ -35,6 +41,11 @@ public class TransactionalServiceImpl implements TransactionalService {
          recepient.get().setBalance(recepientBalance.add(transferMoneyDto.money()));
          accountRepository.save(sender.get());
          accountRepository.save(recepient.get());
+         producer.sendMessage(new Transaction(sender.get().getId(),
+                                              recepient.get().getId(),
+                                              transferMoneyDto.money(),
+                                              transferMoneyDto.currency(),
+                                              LocalDate.now()));
      }
     }
 
