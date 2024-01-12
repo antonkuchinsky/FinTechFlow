@@ -20,11 +20,11 @@ spring:
 
 
 topic:
-  name: t.user.reg
+  name: transaction.reg
 
   flyway:
     locations: classpath:migration
-#transaction.reg
+
 
 management:
   tracing:
