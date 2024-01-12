@@ -3,7 +3,6 @@ package com.banksolution.accountservice.transaction;
 import com.banksolution.accountservice.dto.transactional.BalanceOperationDto;
 import com.banksolution.accountservice.dto.transactional.TransferMoneyDto;
 import com.banksolution.accountservice.exception.InsufficientFundsException;
-import com.banksolution.accountservice.exception.InvalidDataException;
 import com.banksolution.accountservice.model.Account;
 import com.banksolution.accountservice.repository.AccountRepository;
 import com.banksolution.accountservice.service.impl.TransactionalServiceImpl;
@@ -46,7 +45,7 @@ class TransactionalServiceTest {
         recipient.setId(UUID.randomUUID());
         recipient.setBalance(new BigDecimal("50.00"));
 
-        TransferMoneyDto transferMoneyDto = new TransferMoneyDto(sender.getId(), recipient.getId(), new BigDecimal("25.00"));
+        TransferMoneyDto transferMoneyDto = new TransferMoneyDto(sender.getId(), recipient.getId(),"USD", new BigDecimal("25.00"));
 
         when(accountRepository.findById(sender.getId())).thenReturn(Optional.of(sender));
         when(accountRepository.findById(recipient.getId())).thenReturn(Optional.of(recipient));
@@ -88,7 +87,7 @@ class TransactionalServiceTest {
         recipient.setId(UUID.randomUUID());
         recipient.setBalance(new BigDecimal("50.00"));
 
-        TransferMoneyDto transferMoneyDto = new TransferMoneyDto(sender.getId(), recipient.getId(), new BigDecimal("150.00"));
+        TransferMoneyDto transferMoneyDto = new TransferMoneyDto(sender.getId(), recipient.getId(),"USD", new BigDecimal("150.00"));
 
         when(accountRepository.findById(sender.getId())).thenReturn(Optional.of(sender));
         when(accountRepository.findById(recipient.getId())).thenReturn(Optional.of(recipient));
