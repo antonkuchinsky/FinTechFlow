@@ -13,7 +13,6 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name="transactions")
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Transaction {
@@ -24,5 +23,6 @@ public class Transaction {
     private UUID recepientId;
     private BigDecimal sum;
     private String currency;
+    @Column(name="date_transaction")
     private LocalDate date;
 }

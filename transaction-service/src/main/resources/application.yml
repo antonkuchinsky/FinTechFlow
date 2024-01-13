@@ -12,18 +12,21 @@ spring:
     import: optional:configserver:instead
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
-kafka:
-  consumer:
-    group-id: "default"
+    url: jdbc:postgresql://127.0.0.1:5434/transactions_db
+    username: admin
+    password: root
+  flyway:
+    locations: classpath:migration
+  kafka:
+    consumer:
+      group-id: "237e9877-e79b"
+
+server:
+  port: 8071
 
 topic:
   name: transaction.reg
 
-  flyway:
-    locations: classpath:migration
 
 
 management:
