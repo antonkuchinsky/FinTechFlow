@@ -11,6 +11,7 @@ public record TransferMoneyDto(
         UUID senderId,
         UUID recepientId,
         @Pattern(regexp = "USD", message = "The currency can be 'USD'")
+        @NotNull
         String currency,
         @NotNull
         @NotEmpty

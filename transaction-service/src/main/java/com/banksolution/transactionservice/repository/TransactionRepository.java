@@ -12,19 +12,19 @@ import java.util.UUID;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-    @Query("SELECT COALESCE(SUM(t.sum), 0) FROM Transaction t WHERE FUNCTION('MONTH', t.date) = FUNCTION('MONTH', CURRENT_DATE) AND FUNCTION('YEAR', t.date) = FUNCTION('YEAR', CURRENT_DATE) AND (t.recepientId = :id)")
+    @Query("SELECT COALESCE(SUM(t.sum), 0) FROM Transaction t WHERE MONTH(t.date) = MONTH(CURRENT_DATE) AND YEAR(t.date) = YEAR(CURRENT_DATE) AND (t.recepientId = :id)")
     Optional<BigDecimal> getTotalTransactionsForMonthForRecepient(@Param("id") UUID id);
 
-    @Query("SELECT COALESCE(SUM(t.sum), 0) FROM Transaction t WHERE FUNCTION('YEARWEEK', t.date, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1) AND (t.recepientId = :id)")
+    @Query("SELECT COALESCE(SUM(t.sum), 0) FROM Transaction t WHERE EXTRACT(YEAR FROM t.date) = EXTRACT(YEAR FROM CURRENT_DATE) AND EXTRACT(WEEK FROM t.date) = EXTRACT(WEEK FROM CURRENT_DATE) AND (t.recepientId = :id)")
     Optional<BigDecimal> getTotalTransactionsForWeekForRecepient(@Param("id") UUID id);
 
     @Query("SELECT COALESCE(SUM(t.sum), 0) FROM Transaction t WHERE t.date = CURRENT_DATE AND (t.recepientId = :id)")
     Optional<BigDecimal> getTotalTransactionsForDayForRecepient(@Param("id") UUID id);
 
-    @Query("SELECT COALESCE(SUM(t.sum), 0) FROM Transaction t WHERE FUNCTION('MONTH', t.date) = FUNCTION('MONTH', CURRENT_DATE) AND FUNCTION('YEAR', t.date) = FUNCTION('YEAR', CURRENT_DATE) AND (t.senderId = :id)")
+    @Query("SELECT COALESCE(SUM(t.sum), 0) FROM Transaction t WHERE MONTH(t.date) = MONTH(CURRENT_DATE) AND YEAR(t.date) = YEAR(CURRENT_DATE) AND (t.senderId = :id)")
     Optional<BigDecimal> getTotalTransactionsForMonthForSender(@Param("id") UUID id);
 
-    @Query("SELECT COALESCE(SUM(t.sum), 0) FROM Transaction t WHERE FUNCTION('YEARWEEK', t.date, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1) AND (t.senderId = :id)")
+    @Query("SELECT COALESCE(SUM(t.sum), 0) FROM Transaction t WHERE EXTRACT(YEAR FROM t.date) = EXTRACT(YEAR FROM CURRENT_DATE) AND EXTRACT(WEEK FROM t.date) = EXTRACT(WEEK FROM CURRENT_DATE) AND (t.senderId = :id)")
     Optional<BigDecimal> getTotalTransactionsForWeekForSender(@Param("id") UUID id);
 
     @Query("SELECT COALESCE(SUM(t.sum), 0) FROM Transaction t WHERE t.date = CURRENT_DATE AND (t.senderId = :id)")
