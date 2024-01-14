@@ -10,6 +10,8 @@ public record BalanceOperationDto(
         UUID id,
         @NotNull
         @NotEmpty
-        BigDecimal sum
+        BigDecimal sum,
+        @NotNull
+        String currency
 ) {
 }

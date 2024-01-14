@@ -22,8 +22,11 @@ spring:
     auto-offset-reset: earliest
 
 
-topic:
-  name: transaction.reg
+topic_of_accounts:
+  name: transaction_of_accounts.reg
+
+topic_refill_balance:
+  name: transaction_refill_balance.reg
 
 
 management:

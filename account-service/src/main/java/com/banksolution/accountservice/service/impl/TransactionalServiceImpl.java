@@ -41,7 +41,7 @@ public class TransactionalServiceImpl implements TransactionalService {
          recepient.get().setBalance(recepientBalance.add(transferMoneyDto.money()));
          accountRepository.save(sender.get());
          accountRepository.save(recepient.get());
-         producer.sendMessage(new Transaction(sender.get().getId(),
+         producer.sendTransactionsOfAccountsMessage(new Transaction(sender.get().getId(),
                                               recepient.get().getId(),
                                               transferMoneyDto.money(),
                                               transferMoneyDto.currency(),
@@ -50,12 +50,16 @@ public class TransactionalServiceImpl implements TransactionalService {
     }
 
     @Override
+    @Transactional
+    @SneakyThrows
     public void refillBalance(BalanceOperationDto balanceOperationDto) {
         var account=accountRepository.findById(balanceOperationDto.id());
         var accountBalance=account.get().getBalance();
         if(account.isPresent()){
             account.get().setBalance(accountBalance.add(balanceOperationDto.sum()));
             accountRepository.save(account.get());
+            producer.sendTransactionsRefillBalanceMessage(new Transaction(null,balanceOperationDto.id(),
+                    balanceOperationDto.sum(),balanceOperationDto.currency(),LocalDate.now()));
         }
         else{
             throw new InvalidDataException("Account with this id not found","Account not found");

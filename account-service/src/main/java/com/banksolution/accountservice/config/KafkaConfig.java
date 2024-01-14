@@ -30,12 +30,22 @@ public class KafkaConfig {
     }
 
     @Bean
-    public NewTopic topic() {
+    public NewTopic topicTransactionsOfAccounts() {
         return TopicBuilder
-                .name("transaction.reg")
+                .name("transaction_of_accounts.reg")
                 .partitions(1)
                 .replicas(1)
                 .build();
     }
+
+    @Bean
+    public NewTopic topicTransactionsRefillBalance() {
+        return TopicBuilder
+                .name("transaction_refill_balance.reg")
+                .partitions(1)
+                .replicas(1)
+                .build();
+    }
+
 
 }
