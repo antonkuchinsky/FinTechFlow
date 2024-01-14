@@ -40,6 +40,6 @@ public class CustomErrorController  {
         errorResponse.setTitle(exception.getTitle());
         errorResponse.setMessage(exception.getMessage());
         errorResponse.setDateTimeError(ZonedDateTime.now());
-        return ResponseEntity.badRequest().body(errorResponse);
+        return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(errorResponse);
     }
 }
