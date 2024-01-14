@@ -12,14 +12,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class Producer {
 
+
     @Value("${topic_of_accounts.name}")
     private String transactionalOfAccount;
 
     @Value("${topic_refill_balance.name}")
     private String transactionalRefillBalance;
 
+
     private final ObjectMapper objectMapper;
     private final KafkaTemplate<String, String> kafkaTemplate;
+
 
     public String sendTransactionsOfAccountsMessage(Transaction transaction) throws JsonProcessingException {
         String transactionAsMessage = objectMapper.writeValueAsString(transaction);
@@ -30,6 +33,5 @@ public class Producer {
     public String sendTransactionsRefillBalanceMessage(Transaction transaction) throws JsonProcessingException {
         String transactionAsMessage = objectMapper.writeValueAsString(transaction);
         kafkaTemplate.send(transactionalRefillBalance, transactionAsMessage);
-        return "message sent";
     }
 }
