@@ -1,5 +1,6 @@
 package com.banksolution.accountservice.dto.transactional;
 
+
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
