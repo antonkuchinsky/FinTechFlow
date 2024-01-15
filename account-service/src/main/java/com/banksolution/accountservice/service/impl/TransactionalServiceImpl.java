@@ -8,8 +8,9 @@ import com.banksolution.accountservice.exception.InsufficientFundsException;
 import com.banksolution.accountservice.exception.InvalidDataException;
 import com.banksolution.accountservice.repository.AccountRepository;
 import com.banksolution.accountservice.service.TransactionalService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.ws.rs.InternalServerErrorException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,42 +25,49 @@ public class TransactionalServiceImpl implements TransactionalService {
 
     @Override
     @Transactional
-    @SneakyThrows
     public void transferFundsBetweenAccounts(TransferMoneyDto transferMoneyDto) {
-     var sender=accountRepository.findById(transferMoneyDto.senderId());
-     var senderBalance=sender.get().getBalance();
+        var sender = accountRepository.findById(transferMoneyDto.senderId());
+        var senderBalance = sender.get().getBalance();
 
-     var recepient=accountRepository.findById(transferMoneyDto.recepientId());
-     var recepientBalance=recepient.get().getBalance();
+        var recepient = accountRepository.findById(transferMoneyDto.recepientId());
+        var recepientBalance = recepient.get().getBalance();
 
-     if(senderBalance.subtract(transferMoneyDto.money()).compareTo(BigDecimal.ZERO) < 0){
-         throw new InsufficientFundsException("There are insufficient funds in the sender's account","Insufficient funds");
-     }
+        if (senderBalance.subtract(transferMoneyDto.money()).compareTo(BigDecimal.ZERO) < 0) {
+            throw new InsufficientFundsException("There are insufficient funds in the sender's account", "Insufficient funds");
+        } else {
+            sender.get().setBalance(senderBalance.subtract(transferMoneyDto.money()));
+            recepient.get().setBalance(recepientBalance.add(transferMoneyDto.money()));
+            accountRepository.save(sender.get());
+            accountRepository.save(recepient.get());
 
-     else{
-         sender.get().setBalance(senderBalance.subtract(transferMoneyDto.money()));
-         recepient.get().setBalance(recepientBalance.add(transferMoneyDto.money()));
-         accountRepository.save(sender.get());
-         accountRepository.save(recepient.get());
-         producer.sendTransactionsOfAccountsMessage(new Transaction(sender.get().getId(),
-                                              recepient.get().getId(),
-                                              transferMoneyDto.money(),
-                                              transferMoneyDto.currency(),
-                                              LocalDate.now()));
-     }
+            try {
+                producer.sendTransactionsOfAccountsMessage(new Transaction(sender.get().getId(),
+                        recepient.get().getId(),
+                        transferMoneyDto.money(),
+                        transferMoneyDto.currency(),
+                        LocalDate.now()));
+            } catch (JsonProcessingException e) {
+                throw new InternalServerErrorException("Failed to process transaction due to Kafka error");
+            }
+        }
     }
+
 
     @Override
     @Transactional
-    @SneakyThrows
     public void refillBalance(BalanceOperationDto balanceOperationDto) {
         var account=accountRepository.findById(balanceOperationDto.id());
         var accountBalance=account.get().getBalance();
         if(account.isPresent()){
             account.get().setBalance(accountBalance.add(balanceOperationDto.sum()));
             accountRepository.save(account.get());
-            producer.sendTransactionsRefillBalanceMessage(new Transaction(null,balanceOperationDto.id(),
-                    balanceOperationDto.sum(),balanceOperationDto.currency(),LocalDate.now()));
+
+            try {
+                producer.sendTransactionsRefillBalanceMessage(new Transaction(null,balanceOperationDto.id(),
+                        balanceOperationDto.sum(),balanceOperationDto.currency(),LocalDate.now()));
+            } catch (JsonProcessingException e) {
+                throw new InternalServerErrorException("Failed to process transaction due to Kafka error");
+            }
         }
         else{
             throw new InvalidDataException("Account with this id not found","Account not found");
