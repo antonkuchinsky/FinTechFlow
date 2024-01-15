@@ -1,11 +1,13 @@
 package com.banksolution.accountservice.transaction;
 
+import com.banksolution.accountservice.config.Producer;
 import com.banksolution.accountservice.dto.transactional.BalanceOperationDto;
 import com.banksolution.accountservice.dto.transactional.TransferMoneyDto;
 import com.banksolution.accountservice.exception.InsufficientFundsException;
 import com.banksolution.accountservice.model.Account;
 import com.banksolution.accountservice.repository.AccountRepository;
 import com.banksolution.accountservice.service.impl.TransactionalServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,14 +31,17 @@ class TransactionalServiceTest {
     @InjectMocks
     private TransactionalServiceImpl transactionalService;
 
+    @Mock
+    private Producer producer;
+
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
     @Transactional
-    public void testTransferFundsBetweenAccounts() {
+    void testTransferFundsBetweenAccounts() throws JsonProcessingException {
         Account sender = new Account();
         sender.setId(UUID.randomUUID());
         sender.setBalance(new BigDecimal("100.00"));
@@ -60,12 +65,12 @@ class TransactionalServiceTest {
     }
 
     @Test
-    public void testRefillBalance() {
+    void testRefillBalance() {
         Account account = new Account();
         account.setId(UUID.randomUUID());
         account.setBalance(new BigDecimal("100.00"));
 
-        BalanceOperationDto balanceOperationDto = new BalanceOperationDto(account.getId(), new BigDecimal("50.00"));
+        BalanceOperationDto balanceOperationDto = new BalanceOperationDto(account.getId(), new BigDecimal("50.00"),"USD");
 
         when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
 
@@ -78,7 +83,7 @@ class TransactionalServiceTest {
 
     @Test
     @Transactional
-    public void testTransferFundsBetweenAccountsWithInsufficientFunds() {
+    void testTransferFundsBetweenAccountsWithInsufficientFunds() {
         Account sender = new Account();
         sender.setId(UUID.randomUUID());
         sender.setBalance(new BigDecimal("100.00"));
