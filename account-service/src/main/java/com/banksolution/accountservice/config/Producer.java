@@ -33,5 +33,6 @@ public class Producer {
     public String sendTransactionsRefillBalanceMessage(Transaction transaction) throws JsonProcessingException {
         String transactionAsMessage = objectMapper.writeValueAsString(transaction);
         kafkaTemplate.send(transactionalRefillBalance, transactionAsMessage);
+        return "message sent";
     }
 }

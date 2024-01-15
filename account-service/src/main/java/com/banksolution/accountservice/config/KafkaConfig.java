@@ -30,10 +30,14 @@ public class KafkaConfig {
     }
 
     @Bean
- transaction-feature
     public NewTopic topicTransactionsOfAccounts() {
         return TopicBuilder
                 .name("transaction_of_accounts.reg")
+                .partitions(1)
+                .replicas(1)
+                .build();
+    }
+
     @Bean
     public NewTopic topicTransactionsRefillBalance() {
         return TopicBuilder
