@@ -41,7 +41,7 @@ public class KafkaConfig {
     @Bean
     public NewTopic topicTransactionsRefillBalance() {
         return TopicBuilder
-                .name("transaction_refill_balance.reg")
+                .name("transaction_refill_or_write-off_balance.reg")
                 .partitions(1)
                 .replicas(1)
                 .build();

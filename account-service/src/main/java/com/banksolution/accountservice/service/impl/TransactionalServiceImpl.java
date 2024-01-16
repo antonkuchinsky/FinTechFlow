@@ -32,9 +32,13 @@ public class TransactionalServiceImpl implements TransactionalService {
         var recepient = accountRepository.findById(transferMoneyDto.recepientId());
         var recepientBalance = recepient.get().getBalance();
 
-        if (senderBalance.subtract(transferMoneyDto.money()).compareTo(BigDecimal.ZERO) < 0) {
+        if (senderBalance.subtract(transferMoneyDto.money()).compareTo(BigDecimal.ZERO) < 0){
             throw new InsufficientFundsException("There are insufficient funds in the sender's account", "Insufficient funds");
-        } else {
+        }
+        if(transferMoneyDto.money().compareTo(BigDecimal.ZERO)<0){
+            throw new InvalidDataException("Money can't be in a negative number","Negative number");
+        }
+        else{
             sender.get().setBalance(senderBalance.subtract(transferMoneyDto.money()));
             recepient.get().setBalance(recepientBalance.add(transferMoneyDto.money()));
             accountRepository.save(sender.get());
@@ -58,18 +62,49 @@ public class TransactionalServiceImpl implements TransactionalService {
     public void refillBalance(BalanceOperationDto balanceOperationDto) {
         var account=accountRepository.findById(balanceOperationDto.id());
         var accountBalance=account.get().getBalance();
-        if(account.isPresent()){
-            account.get().setBalance(accountBalance.add(balanceOperationDto.sum()));
-            accountRepository.save(account.get());
-
-            try {
-                producer.sendTransactionsRefillBalanceMessage(new Transaction(null,balanceOperationDto.id(),
-                        balanceOperationDto.sum(),balanceOperationDto.currency(),LocalDate.now()));
-            } catch (JsonProcessingException e) {
-                throw new InternalServerErrorException("Failed to process transaction due to Kafka error");
+        if(account.isPresent()) {
+            if (balanceOperationDto.sum().compareTo(BigDecimal.ZERO) < 0) {
+                throw new InvalidDataException("Money can't be in a negative number", "Negative number");
+            } else {
+                account.get().setBalance(accountBalance.add(balanceOperationDto.sum()));
+                accountRepository.save(account.get());
+                try {
+                    producer.sendTransactionsRefillOrWriteOffBalanceMessage(new Transaction(null, balanceOperationDto.id(),
+                            balanceOperationDto.sum(), balanceOperationDto.currency(), LocalDate.now()));
+                } catch (JsonProcessingException e) {
+                    throw new InternalServerErrorException("Failed to process transaction due to Kafka error");
+                }
             }
         }
         else{
+            throw new InvalidDataException("Account with this id not found","Account not found");
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void writeOffBalance(BalanceOperationDto balanceOperationDto) {
+        var account = accountRepository.findById(balanceOperationDto.id());
+        var accountBalance = account.get().getBalance();
+        if(account.isPresent()) {
+            if (accountBalance.subtract(balanceOperationDto.sum()).compareTo(BigDecimal.ZERO) < 0) {
+                throw new InsufficientFundsException("There are insufficient funds in the sender's account", "Insufficient funds");
+            }
+            if (balanceOperationDto.sum().compareTo(BigDecimal.ZERO) < 0) {
+                throw new InvalidDataException("Money can't be in a negative number", "Negative number");
+            } else {
+                account.get().setBalance(accountBalance.subtract(balanceOperationDto.sum()));
+                accountRepository.save(account.get());
+                try {
+                    producer.sendTransactionsRefillOrWriteOffBalanceMessage(new Transaction(balanceOperationDto.id(), null,
+                            balanceOperationDto.sum(), balanceOperationDto.currency(), LocalDate.now()));
+                } catch (JsonProcessingException e) {
+                    throw new InternalServerErrorException("Failed to process transaction due to Kafka error");
+                }
+            }
+        }
+        else {
             throw new InvalidDataException("Account with this id not found","Account not found");
         }
     }

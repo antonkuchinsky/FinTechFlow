@@ -16,8 +16,8 @@ public class Producer {
     @Value("${topic_of_accounts.name}")
     private String transactionalOfAccount;
 
-    @Value("${topic_refill_balance.name}")
-    private String transactionalRefillBalance;
+    @Value("${topic_refill_or_write-off_balance.name}")
+    private String transactionalRefillOrWriteOffBalance;
 
 
     private final ObjectMapper objectMapper;
@@ -30,9 +30,9 @@ public class Producer {
         return "message sent";
     }
 
-    public String sendTransactionsRefillBalanceMessage(Transaction transaction) throws JsonProcessingException {
+    public String sendTransactionsRefillOrWriteOffBalanceMessage(Transaction transaction) throws JsonProcessingException {
         String transactionAsMessage = objectMapper.writeValueAsString(transaction);
-        kafkaTemplate.send(transactionalRefillBalance, transactionAsMessage);
+        kafkaTemplate.send(transactionalRefillOrWriteOffBalance, transactionAsMessage);
         return "message sent";
     }
 }

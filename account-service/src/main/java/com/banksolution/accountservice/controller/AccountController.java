@@ -47,7 +47,7 @@ public class AccountController {
 
     @PatchMapping("/transaction/transfer")
     @ResponseStatus(HttpStatus.CREATED)
-    public void transferFundsBetweenAccounts(@RequestBody TransferMoneyDto transferMoneyDto){
+    public void transferFundsBetweenAccounts(@RequestBody TransferMoneyDto transferMoneyDto) {
      transactionalService.transferFundsBetweenAccounts(transferMoneyDto);
     }
 
@@ -55,5 +55,11 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     public void refillBalance(@RequestBody BalanceOperationDto balanceOperationDto){
         transactionalService.refillBalance(balanceOperationDto);
+    }
+
+    @PatchMapping("/transaction/write-off")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void writeOffBalance(@RequestBody BalanceOperationDto balanceOperationDto){
+        transactionalService.writeOffBalance(balanceOperationDto);
     }
 }
