@@ -27,8 +27,8 @@ server:
 topic_of_accounts:
   name: transaction_of_accounts.reg
 
-topic_refill_balance:
-  name: transaction_refill_balance.reg
+topic_refill_or_write-off_balance:
+  name: transaction_refill_or_write-off_balance.reg
 
 
 

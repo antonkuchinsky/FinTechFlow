@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class Consumer {
 
     private static final String regTopicOfAccount = "${topic_of_accounts.name}";
-    private static final String regTopicOfRefillBalance="${topic_refill_balance.name}";
+    private static final String regTopicOfRefillBalance="${topic_refill_or_write-off_balance.name}";
 
     private final ObjectMapper objectMapper;
     private final TransactionService transactionService;
