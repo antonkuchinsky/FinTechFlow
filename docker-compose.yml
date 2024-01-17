@@ -33,6 +33,22 @@ services:
       - postgres-network
     restart: always
 
+  postgres_keycloack:
+    image: postgres:15.3
+    container_name: keycloack_db
+    ports:
+      - "5436:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=keycloack_db
+    volumes:
+      - keycloacks_data:/var/lib/postgresql/data
+      - ./sql-scripts/created_keycloack_db.sql:/docker-entrypoint-initdb.d/created_keycloack_db.sql
+    networks:
+      - postgres-network
+    restart: always
+
   kafka:
     image: obsidiandynamics/kafka
     container_name: kafka
@@ -74,6 +90,24 @@ services:
     ports:
       - "2181:2181"
 
+  kc:
+    image: jboss/keycloak
+    container_name: keycloak
+    environment:
+      KC_DB_URL: jdbc:postgresql://postgres_keycloack:5436/keycloack_db
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: root
+      KC_DB_SCHEMA: public
+      KC_FEATURES: preview
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8484:8080"
+    depends_on:
+      - postgres_keycloack
+
+
+
 networks:
   postgres-network:
     driver: bridge
@@ -83,3 +117,4 @@ networks:
 volumes:
   accounts_pgdata:
   transactions_data:
+  keycloacks_data:
