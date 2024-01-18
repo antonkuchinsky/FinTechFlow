@@ -1,1 +1,15 @@
+server:
+  port: 8080
 
+spring:
+  application:
+    name: user-service
+  config:
+    import: optional:configserver:instead
+
+keycloak:
+  realm: fintechflow
+  auth-server-url: http://localhost:8484/auth
+  resource: fintechflow
+  public-client: true
+  bearer-only: true
