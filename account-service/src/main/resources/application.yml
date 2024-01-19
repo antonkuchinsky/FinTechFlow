@@ -7,7 +7,7 @@ eureka:
 
 spring:
   application:
-    name: user-service
+    name: account-service
   config:
     import: optional:configserver:instead
   datasource:
