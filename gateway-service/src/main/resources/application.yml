@@ -14,6 +14,12 @@ spring:
   config:
     import: optional:configserver:instead
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8484/auth/realms/FinTechFlow
+
   cloud:
     gateway:
       routes:
