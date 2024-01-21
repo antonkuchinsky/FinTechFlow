@@ -79,7 +79,7 @@ services:
     environment:
       KAFKA_BROKERCONNECT: "kafka:29092"
     depends_on:
-      - "kafka"
+      - kafka
 
   zookeeper:
     image: zookeeper:3.7.0
@@ -106,6 +106,60 @@ services:
     depends_on:
       - postgres_keycloack
 
+  discovery-service:
+    build:
+      context: ./discovery-service
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - postgres-network
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    ports:
+      - "8222:8222"
+    depends_on:
+      - discovery-service
+      - kafka
+      - kc
+    networks:
+      - postgres-network
+      - kafka-net
+
+  account-service:
+    build:
+      context: ./account-service
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres_accounts
+      - gateway-service
+      - discovery-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://accounts_db:5432/accounts_db
+      - DATABASE_PASSWORD=root
+      - DATABASE_USERNAME=admin
+    networks:
+      - postgres-network
+      - kafka-net
+
+  transaction-service:
+    build:
+      context: ./transaction-service
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres_transactions
+      - gateway-service
+      - discovery-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://transactions_db:5434/transactions_db
+      - DATABASE_PASSWORD=root
+      - DATABASE_USERNAME=admin
+    networks:
+      - postgres-network
+      - kafka-net
 
 
 networks:
