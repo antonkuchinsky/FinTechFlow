@@ -28,12 +28,12 @@ services:
       - POSTGRES_DB=transactions_db
     volumes:
       - transactions_data:/var/lib/postgresql/data
-      - ./sql-scripts/created_accounts_db.sql:/docker-entrypoint-initdb.d/created_accounts_db.sql
+      - ./sql-scripts/created_transactions_db.sql:/docker-entrypoint-initdb.d/created_transactions_db.sql
     networks:
       - postgres-network
     restart: always
 
-  postgres_keycloack:
+  postgres_keycloak:
     image: postgres:15.3
     container_name: keycloack_db
     ports:
@@ -43,7 +43,7 @@ services:
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=keycloack_db
     volumes:
-      - keycloacks_data:/var/lib/postgresql/data
+      - keycloak_data:/var/lib/postgresql/data
       - ./sql-scripts/created_keycloack_db.sql:/docker-entrypoint-initdb.d/created_keycloack_db.sql
     networks:
       - postgres-network
@@ -60,13 +60,13 @@ services:
     environment:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER_INTERNAL:PLAINTEXT,DOCKER_EXTERNAL:PLAINTEXT
       KAFKA_LISTENERS: DOCKER_INTERNAL://:29092,DOCKER_EXTERNAL://:9092
-      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:29092,DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:29092,DOCKER_EXTERNAL://kafka:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER_INTERNAL
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_BROKER_ID: 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      depends_on:
-       -zookeeper
+    depends_on:
+      - zookeeper
 
   kafdrop:
     image: obsidiandynamics/kafdrop
@@ -94,7 +94,7 @@ services:
     image: jboss/keycloak
     container_name: keycloak
     environment:
-      KC_DB_URL: jdbc:postgresql://postgres_keycloack:5436/keycloack_db
+      KC_DB_URL: jdbc:postgresql://keycloack_db:5432/keycloack_db
       KC_DB_USERNAME: admin
       KC_DB_PASSWORD: root
       KC_DB_SCHEMA: public
@@ -104,7 +104,7 @@ services:
     ports:
       - "8484:8080"
     depends_on:
-      - postgres_keycloack
+      - postgres_keycloak
 
   discovery-service:
     build:
@@ -154,7 +154,7 @@ services:
       - gateway-service
       - discovery-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://transactions_db:5434/transactions_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://transactions_db:5432/transactions_db
       - DATABASE_PASSWORD=root
       - DATABASE_USERNAME=admin
     networks:
@@ -171,4 +171,4 @@ networks:
 volumes:
   accounts_pgdata:
   transactions_data:
-  keycloacks_data:
+  keycloak_data:
