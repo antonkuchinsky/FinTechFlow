@@ -20,7 +20,8 @@ spring:
   kafka:
     consumer:
       group-id: "237e9877-e79b"
-
+    bootstrap-servers: kafka:9092
+    auto-offset-reset: earliest
 
 topic_of_accounts:
   name: transaction_of_accounts.reg
